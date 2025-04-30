@@ -86,15 +86,15 @@ module.exports = {
 
     }
 
-    helpMessage += `> Thank you for using our Cid Kagenou bot, this bot has multiple system and multiple command structures.\n`;
+    helpMessage += `> You are using now the bot owned by vern aka vrax, this bot has multiple system and multiple command structures.\n`;
 
     helpMessage += `> This is the original version 2.0 of Cid bot, will release soon.\n`;
 
     helpMessage += `> For further assistance, contact the developer,\n`;
 
-    helpMessage += `Gmail: korisawaumuzaki@gmail.com\n`;
+    helpMessage += `Gmail: heroxattackz@gmail.com`;
 
-    helpMessage += `Facebook: https://www.facebook.com/aljur.pogoy.2024`;
+    helpMessage += `Facebook: https://www.facebook.com/vern.23x`;
 
   
 
