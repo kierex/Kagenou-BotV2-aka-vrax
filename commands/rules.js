@@ -56,7 +56,7 @@ module.exports = {
 
         ];
 
-        const message = `Cid Kagenou Bot Rules\n\n${rules.join("\n")}\n\nBreaking these rules may result in restrictions.`;
+        const message = `Vern aka vrax Rules\n\n${rules.join("\n")}\n\nBreaking these rules may result in restrictions.`;
 
         api.sendMessage(message, threadID, messageID);
 
