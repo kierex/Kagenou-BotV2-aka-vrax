@@ -1,7 +1,7 @@
 {
   "name": "c",
   "version": "1.0.0",
-  "description": "Bot Developed by Aljur Pogoy, and his girlfriend too",
+  "description": "This bot developed by vern aka vrax, feel free to use just avoid inappropriate and things that doesn't have sense",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
