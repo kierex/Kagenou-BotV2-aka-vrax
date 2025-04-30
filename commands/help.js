@@ -92,7 +92,7 @@ module.exports = {
 
     helpMessage += `> For further assistance, contact the developer,\n`;
 
-    helpMessage += `Gmail: heroxattackz@gmail.com/n`;
+    helpMessage += `Gmail: heroxattackz@gmail.com\n`;
 
     helpMessage += `Facebook: https://www.facebook.com/vern.23x`;
 
