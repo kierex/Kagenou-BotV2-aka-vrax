@@ -50,7 +50,7 @@ module.exports = {
 
             if (data && data.response) {
 
-                api.sendMessage(`💬 Cid Kagenou response:\n${data.response}`, event.threadID, (err, msg) => {
+                api.sendMessage(`💬 vern aka vrax response:\n${data.response}`, event.threadID, (err, msg) => {
 
                     if (!err && msg) {
 
