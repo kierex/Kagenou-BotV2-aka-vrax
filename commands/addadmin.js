@@ -7,15 +7,7 @@ module.exports = {
     description: "Adds a new user as an admin.",
     usage: "/addadmin <userID>",
     execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
-        const { threadID, senderID } = event;
-
-        // Validate if sender is an admin
-        if (!admins.includes(senderID)) {
-            return sendMessage(api, {
-                threadID,
-                message: "❌ You are not an admin.",
-            });
-        }
+        const { threadID } = event;
 
         // Validate the provided user ID
         const newAdminID = args[0];
