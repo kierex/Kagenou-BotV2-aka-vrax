@@ -74,7 +74,7 @@ module.exports = {
 
     // Construct the help message
 
-    let helpMessage = "====【 Cid Kagenou Bot Commands 】====\n\n";
+    let helpMessage = "====【Vrax AKA vern 】====\n\n";
 
     helpMessage += commandList.length > 0 ? commandList.join("\n") + "\n\n" : "No available commands.\n\n";
 
