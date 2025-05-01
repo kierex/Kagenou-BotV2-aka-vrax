@@ -6,7 +6,7 @@ module.exports = {
 
     name: "prefix",
 
-    author: "Aljur Pogoy",
+    author: "Vern AKA Vraxy",
 
     nonPrefix: true,
 
@@ -56,7 +56,7 @@ module.exports = {
 
                 "[👾] Tokito System Prefix: " + tokitoPrefix + "\n" +
 
-                "[🗡️] Cid-Kagenou System Prefix: " + cidPrefix + "\n" +
+                "[🗡️] Vern-vraxy System Prefix: " + cidPrefix + "\n" +
 
                 "[🎭] VIP System Prefix: " + vipPrefix + "\n\n" +
 
