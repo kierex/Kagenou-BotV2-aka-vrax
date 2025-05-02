@@ -3,7 +3,8 @@ const axios = require("axios");
 module.exports = {
   name: "translator",
   category: "Utility",
-  author: "Aljur Pogoy",
+  author: "Vern Esg",
+
   execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
     const { threadID } = event;
 
@@ -14,28 +15,39 @@ module.exports = {
       });
     }
 
-    const language = args.shift();
+    const language = args.shift().toLowerCase();
     const text = args.join(" ");
 
     try {
       const response = await axios.post("https://libretranslate.de/translate", {
         q: text,
         source: "auto",
-        target: language
+        target: language,
+        format: "text"
+      }, {
+        headers: { "Content-Type": "application/json" }
       });
 
-      if (!response.data || !response.data.translatedText) {
-        return sendMessage(api, { threadID, message: "❌ Translation failed. Try again later!" });
+      const translated = response.data.translatedText;
+
+      if (!translated) {
+        return sendMessage(api, {
+          threadID,
+          message: "❌ Translation failed. Please try again later!"
+        });
       }
 
       sendMessage(api, {
         threadID,
-        message: `Translated to ${language}:**\n${response.data.translatedText}`
+        message: `✅ Translated to [${language}]:\n${translated}`
       });
 
     } catch (error) {
-      console.error("Translator API Error:", error);
-      sendMessage(api, { threadID, message: "❌ Error translating text. Try again later!" });
+      console.error("Translator API Error:", error.message);
+      sendMessage(api, {
+        threadID,
+        message: "❌ Error translating text. The translation service might be unavailable."
+      });
     }
   },
 };
