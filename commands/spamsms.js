@@ -1,8 +1,3 @@
-//YOU CAN CHANGE THIS API BECAUSE THIS API IS NOW NOT WORK
-
-
-
-
 const axios = require("axios");
 
 module.exports = {
@@ -12,38 +7,43 @@ module.exports = {
     const { threadID } = event;
 
     // Check if the user provided enough arguments
-    if (args.length < 3) {
-      sendMessage(api, { threadID, message: "❌ Usage: /spamsms <phone> <count> <interval_in_seconds>" });
-      return;
+    if (args.length < 4) {
+      return sendMessage(api, {
+        threadID,
+        message: "❌ Usage: /spamsms <phone> <count> <interval_in_seconds>\nExample: /spamsms 0123456789 5 10",
+      });
     }
 
-    // Extract parameters
+    // Extract parameters correctly
     const phone = args[1];
-    const count = parseInt(args[1]);
-    const interval = parseInt(args[2]);
+    const count = parseInt(args[2]);
+    const interval = parseInt(args[3]);
 
     // Validate inputs
+    if (!/^\d+$/.test(phone)) {
+      return sendMessage(api, { threadID, message: "❌ Invalid phone number. Digits only." });
+    }
+
     if (isNaN(count) || isNaN(interval) || count <= 0 || interval <= 0) {
-      sendMessage(api, { threadID, message: "❌ Invalid count or interval. Please enter numbers greater than 0." });
-      return;
+      return sendMessage(api, { threadID, message: "❌ Count and interval must be positive numbers." });
     }
 
     try {
-      // Construct the API URL
-      const apiUrl = `https://kaiz-apis.gleeze.com/api/spamsms?phone=${phone}&count=${count}&interval=${interval}`;
+      // Replace with a working spam SMS API
+      const apiUrl = `https://your-new-api.com/spamsms?phone=${phone}&count=${count}&interval=${interval}`;
 
-      // Send request to API
       const response = await axios.get(apiUrl);
 
-      // Check API response
       if (response.data.success) {
-        sendMessage(api, { threadID, message: `✅ Successfully sent ${count} spam SMS to ${phone} every ${interval} seconds.` });
+        sendMessage(api, {
+          threadID,
+          message: `✅ Successfully sent ${count} spam SMS to ${phone} every ${interval} seconds.`,
+        });
       } else {
-        sendMessage(api, { threadID, message: `❌ Failed to send SMS: ${response.data.message || "Unknown error"}` });
+        sendMessage(api, {
+          threadID,
+          message: `❌ API error: ${response.data.message || "Unknown error"}`,
+        });
       }
     } catch (error) {
-      console.error("Error in spamsms command:", error);
-      sendMessage(api, { threadID, message: "❌ Failed to send spam SMS. API might be down." });
-    }
-  },
-};
+      console.error("Error in
