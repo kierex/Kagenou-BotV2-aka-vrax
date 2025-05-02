@@ -13,12 +13,14 @@ module.exports = {
         if (args.length < 6) {
             return api.sendMessage(
                 "⚠ Usage: fbcover <Name> <Subname> <Phone> <Address> <Email> <Color>\n" +
-                "Example: fbcover Mark Zuckerberg n/a USA zuck@gmail.com Cyan",
+                "Example: fbcover \"Mark Zuckerberg\" n/a 0123456789 USA zuck@gmail.com Cyan",
                 threadID
             );
         }
 
-        const [name, subname, phone, address, email, color] = args;
+        // Extract arguments properly to handle spaces
+        const [name, subname, phone, address, email, ...colorParts] = args;
+        const color = colorParts.join(" ");
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,36 +34,32 @@ module.exports = {
         try {
             api.sendMessage("⏳ Generating your Facebook cover, please wait...", threadID);
 
-            // Download the image using axios
             const response = await axios({
                 url: imageUrl,
                 method: "GET",
                 responseType: "stream",
             });
 
-            // Save the image to the local file system
+            const writer = fs.createWriteStream(imagePath);
+            response.data.pipe(writer);
+
             await new Promise((resolve, reject) => {
-                const writer = fs.createWriteStream(imagePath);
-                response.data.pipe(writer);
                 writer.on("finish", resolve);
                 writer.on("error", reject);
             });
 
-            // Send the image as an attachment
             api.sendMessage({
                 body: `✅ Facebook cover for ${name} has been generated!`,
                 attachment: fs.createReadStream(imagePath),
             }, threadID, () => {
-                // Clean up the image file
-                fs.unlinkSync(imagePath);
+                fs.unlink(imagePath, () => {});
             });
 
         } catch (error) {
-            console.error("Error generating fbcover:", error);
+            console.error("Error generating fbcover:", error.message);
 
-            // Attempt to clean up the image file in case of an error
             if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
+                fs.unlink(imagePath, () => {});
             }
 
             api.sendMessage("❌ Failed to generate the Facebook cover. Please try again later.", threadID);
