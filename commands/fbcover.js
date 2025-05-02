@@ -9,8 +9,12 @@ module.exports = {
     async run({ api, event, args }) {
         const { threadID, senderID } = event;
 
-        // Validate arguments
-        if (args.length < 6) {
+        // Join args into a single string and use regex to extract quoted or plain arguments
+        const input = args.join(" ");
+        const matches = [...input.matchAll(/"([^"]+)"|(\S+)/g)];
+        const parsedArgs = matches.map(m => m[1] || m[2]);
+
+        if (parsedArgs.length < 6) {
             return api.sendMessage(
                 "⚠ Usage: fbcover <Name> <Subname> <Phone> <Address> <Email> <Color>\n" +
                 "Example: fbcover \"Mark Zuckerberg\" n/a 0123456789 USA zuck@gmail.com Cyan",
@@ -18,11 +22,9 @@ module.exports = {
             );
         }
 
-        // Extract arguments properly to handle spaces
-        const [name, subname, phone, address, email, ...colorParts] = args;
+        const [name, subname, phone, address, email, ...colorParts] = parsedArgs;
         const color = colorParts.join(" ");
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return api.sendMessage("❌ Invalid email format. Please provide a valid email address.", threadID);
@@ -51,9 +53,7 @@ module.exports = {
             api.sendMessage({
                 body: `✅ Facebook cover for ${name} has been generated!`,
                 attachment: fs.createReadStream(imagePath),
-            }, threadID, () => {
-                fs.unlink(imagePath, () => {});
-            });
+            }, threadID, () => fs.unlink(imagePath, () => {}));
 
         } catch (error) {
             console.error("Error generating fbcover:", error.message);
