@@ -14,14 +14,15 @@ module.exports = {
                     return sendMessage(api, { threadID, message: "❌ Failed to retrieve thread list." });
                 }
 
-                if (list.length === 0) {
+                if (!list || list.length === 0) {
                     return sendMessage(api, { threadID, message: "📂 No active threads found." });
                 }
 
-              
-                const threadInfo = list.map(thread => `🔹 **${thread.name || "Unnamed Chat"}**\n📌 ID: ${thread.threadID}`).join("\n\n");
-                
-                const responseMessage = `📜Active Threads:\n\n${threadInfo}`;
+                const threadInfo = list.map(thread =>
+                    `🔹 ${thread.name || "Unnamed Chat"}\n📌 ID: ${thread.threadID}`
+                ).join("\n\n");
+
+                const responseMessage = `📜 Active Threads:\n\n${threadInfo}`;
                 sendMessage(api, { threadID, message: responseMessage });
             });
         } catch (error) {
