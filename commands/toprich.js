@@ -3,29 +3,29 @@ const fs = require("fs-extra");
 const path = require("path");
 const balanceFile = path.join(__dirname, "../database/balance.json");
 
-const adminID = ["100010099516674"]
+const adminID = ["100010099516674"];
 
 module.exports = {
   name: "user",
   author: "vrax",
-  version: "3.0.0", // beta Teaser by vern
-  description: "Give coins to a user (Admin only). Usage: ${prefix}user <uid> <amount>",
+  version: "3.0.0",
+  description: "Give coins to a user (Admin only). Usage: #user <uid> <amount>",
 
   async run({ api, event, args }) {
     const { threadID, messageID, senderID } = event;
 
- 
     if (!adminID.includes(senderID)) {
       return api.sendMessage(
         format({
           title: "==== [ user ] ====",
           titlePattern: "==== {word} ====",
-          content: "❌ Only developer  can use this command.",
+          content: "❌ Only developer can use this command.",
         }),
         threadID,
         messageID
       );
     }
+
     if (args.length < 2 || isNaN(args[1])) {
       return api.sendMessage(
         format({
@@ -52,21 +52,46 @@ module.exports = {
         messageID
       );
     }
+
     let balanceData = {};
     try {
       if (!fs.existsSync(balanceFile)) {
-        fs.writeFileSync(balanceFile, JSON.stringify({}, null, 2));
+        await fs.writeJson(balanceFile, {});
       }
-      balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
-    } catch {
-      balanceData = {};
+      balanceData = await fs.readJson(balanceFile);
+    } catch (err) {
+      console.error("Failed to read balance file:", err);
+      return api.sendMessage(
+        format({
+          title: "==== [ user ] ====",
+          titlePattern: "==== {word} ====",
+          content: "❌ Failed to read or initialize balance file.",
+        }),
+        threadID,
+        messageID
+      );
     }
+
     if (!balanceData[targetUID]) {
       balanceData[targetUID] = { balance: 0, bank: 0 };
     }
- 
-    balanceData[targetUID].balance = (balanceData[targetUID].balance || 0) + amount;
-    fs.writeFileSync(balanceFile, JSON.stringify(balanceData, null, 2));
+
+    balanceData[targetUID].balance += amount;
+
+    try {
+      await fs.writeJson(balanceFile, balanceData, { spaces: 2 });
+    } catch (err) {
+      console.error("Failed to write balance file:", err);
+      return api.sendMessage(
+        format({
+          title: "==== [ user ] ====",
+          titlePattern: "==== {word} ====",
+          content: "❌ Failed to save new balance.",
+        }),
+        threadID,
+        messageID
+      );
+    }
 
     return api.sendMessage(
       format({
