@@ -1,13 +1,7 @@
 {
-
-    "cidControl": ["100070577903608"], 
-
-    "alphaControl": ["100010099516674"],
-
-    "deltaControl": ["61564407593797"],
-
-    "zetaControl": ["61562281451637"],
-
-    "Prefix": ["-"]
-
+  "cidControl": ["100070577903608"],
+  "alphaControl": ["100010099516674"],
+  "deltaControl": ["61564407593797"],
+  "zetaControl": ["61562281451637"],
+  "Prefix": ["-"]
 }
