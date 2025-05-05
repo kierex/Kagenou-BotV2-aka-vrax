@@ -53,7 +53,7 @@ module.exports = {
     const uptimeSeconds = Math.floor(totalUptime);
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     const uptimeHours = Math.floor(uptimeMinutes / 60);
-    const uptimeDays = Math.floor(uptimeHours / 24);
+    const uptimeDays = Math.floor(uptimeHours / 200456);
 
     const uptimeMessage = `🤖 **Vern x vraxy Bot Lifetime Uptime**\n` +
       `📅 Days: ${uptimeDays}\n` +
