@@ -1,56 +1,81 @@
-const fs = require("fs");
+const { format, UNIRedux } = require("cassidy-styler");
+const fs = require("fs-extra");
+const path = require("path");
+const balanceFile = path.join(__dirname, "../database/balance.json");
 
-const balanceFile = "./database/balance.json";
+const adminID = ["100010099516674"]
 
 module.exports = {
-    name: "toprich",
-    description: "Shows the top richest players.",
-    usage: "/toprich",
+  name: "user",
+  author: "vrax",
+  version: "3.0.0", // beta Teaser by vern
+  description: "Give coins to a user (Admin only). Usage: ${prefix}user <uid> <amount>",
 
-    async run({ api, event }) {
-        if (!fs.existsSync(balanceFile)) {
-            return api.sendMessage("⚠ No balance data found!", event.threadID);
-        }
+  async run({ api, event, args }) {
+    const { threadID, messageID, senderID } = event;
 
-        let balanceData;
-        try {
-            balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
-        } catch (error) {
-            return api.sendMessage("⚠ Error reading balance data!", event.threadID);
-        }
-
-        // Normalize and sort users by total wealth
-        let sortedUsers = Object.entries(balanceData)
-            .map(([id, data]) => ({
-                id,
-                balance: data.balance || 0,
-                bank: data.bank || 0
-            }))
-            .sort((a, b) => (b.balance + b.bank) - (a.balance + a.bank))
-            .slice(0, 10); // Top 10
-
-        if (sortedUsers.length === 0) {
-            return api.sendMessage("⚠ No balance records available.", event.threadID);
-        }
-
-        let message = "💰 Top Richest Players:\n\n";
-
-        let namePromises = sortedUsers.map(user =>
-            new Promise(resolve => {
-                api.getUserInfo(user.id, (err, info) => {
-                    if (err || !info || !info[user.id]) {
-                        return resolve(`🏆 UID: ${user.id}\n   🪙 Wallet: ${user.balance}\n   🏦 Bank: ${user.bank}`);
-                    }
-
-                    let name = info[user.id].name;
-                    resolve(`🏆 ${name} (UID: ${user.id})\n   🪙 Wallet: ${user.balance}\n   🏦 Bank: ${user.bank}`);
-                });
-            })
-        );
-
-        Promise.all(namePromises).then(names => {
-            message += names.join("\n\n");
-            api.sendMessage(message, event.threadID);
-        });
+ 
+    if (!adminID.includes(senderID)) {
+      return api.sendMessage(
+        format({
+          title: "==== [ user ] ====",
+          titlePattern: "==== {word} ====",
+          content: "❌ Only developer  can use this command.",
+        }),
+        threadID,
+        messageID
+      );
     }
+    if (args.length < 2 || isNaN(args[1])) {
+      return api.sendMessage(
+        format({
+          title: "==== [ user ] ====",
+          titlePattern: "==== {word} ====",
+          content: "❌ Usage: #user <uid> <amount>\nExample: #user 1234567890 100",
+        }),
+        threadID,
+        messageID
+      );
+    }
+
+    const targetUID = args[0];
+    const amount = parseInt(args[1]);
+
+    if (amount <= 0) {
+      return api.sendMessage(
+        format({
+          title: "==== [ user ] ====",
+          titlePattern: "==== {word} ====",
+          content: "❌ Amount must be greater than 0.",
+        }),
+        threadID,
+        messageID
+      );
+    }
+    let balanceData = {};
+    try {
+      if (!fs.existsSync(balanceFile)) {
+        fs.writeFileSync(balanceFile, JSON.stringify({}, null, 2));
+      }
+      balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
+    } catch {
+      balanceData = {};
+    }
+    if (!balanceData[targetUID]) {
+      balanceData[targetUID] = { balance: 0, bank: 0 };
+    }
+ 
+    balanceData[targetUID].balance = (balanceData[targetUID].balance || 0) + amount;
+    fs.writeFileSync(balanceFile, JSON.stringify(balanceData, null, 2));
+
+    return api.sendMessage(
+      format({
+        title: "==== [ user ] ====",
+        titlePattern: "==== {word} ====",
+        content: `✅ Gave ${amount} coins to UID ${targetUID}. 💰\nNew wallet balance: ${balanceData[targetUID].balance} coins.`,
+      }),
+      threadID,
+      messageID
+    );
+  },
 };
