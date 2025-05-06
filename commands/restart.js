@@ -1,5 +1,5 @@
 module.exports = {
-    name: 'restart',
+    name: 'restart', 
     description: 'Restarts the bot.',
     execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
         const { threadID, senderID } = event;
