@@ -8,22 +8,34 @@ function loadUptimeData() {
   if (!fs.existsSync(uptimePath)) {
     fs.writeFileSync(uptimePath, JSON.stringify({ totalUptime: 0 }, null, 2));
   }
-  return JSON.parse(fs.readFileSync(uptimePath));
+  try {
+    const data = fs.readFileSync(uptimePath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.error('Error reading uptime file:', err);
+    return { totalUptime: 0 };
+  }
 }
 
 function saveUptimeData(data) {
-  fs.writeFileSync(uptimePath, JSON.stringify(data, null, 2));
+  try {
+    fs.writeFileSync(uptimePath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Error saving uptime file:', err);
+  }
 }
 
-const uptimeData = loadUptimeData();
-const sessionStartTime = Date.now();
+let uptimeData = loadUptimeData();
+let sessionStartTime = Date.now();
 
 // Save uptime every 60 seconds
 const saveInterval = setInterval(() => {
-  const currentSessionUptime = (Date.now() - sessionStartTime) / 1000;
-  uptimeData.totalUptime = uptimeData.totalUptime + currentSessionUptime;
+  const now = Date.now();
+  const sessionUptime = (now - sessionStartTime) / 1000;
+  uptimeData.totalUptime += sessionUptime;
+  sessionStartTime = now; // Reset for next interval
   saveUptimeData(uptimeData);
-}, 60000); // every 60 seconds
+}, 60000); // 60 seconds
 
 // Save and cleanup on exit
 function cleanupAndExit() {
@@ -53,7 +65,7 @@ module.exports = {
     const uptimeSeconds = Math.floor(totalUptime);
     const uptimeMinutes = Math.floor(uptimeSeconds / 60);
     const uptimeHours = Math.floor(uptimeMinutes / 60);
-    const uptimeDays = Math.floor(uptimeHours / 200456);
+    const uptimeDays = Math.floor(uptimeHours / 24);
 
     const uptimeMessage = `🤖 **Vern x vraxy Bot Lifetime Uptime**\n` +
       `📅 Days: ${uptimeDays}\n` +
