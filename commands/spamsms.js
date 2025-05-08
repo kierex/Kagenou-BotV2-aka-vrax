@@ -36,11 +36,13 @@ module.exports = {
 
     try {
       // Correct the API URL format
-      const apiUrl = `https://kaiz-apis.gleeze.com/api/spamsms?phone=${phone}&count=${count}&interval=${interval}`;
+      const apiUrl = `https://kaiz-apis.gleeze.com/api/spamsms`;
+      const payload = { phone, count, interval };
 
-      const response = await axios.get(apiUrl);
+      const response = await axios.post(apiUrl, payload);
 
-      if (response.data.success) {
+      // Validate API response structure
+      if (response && response.data && response.data.success) {
         sendMessage(api, {
           threadID,
           message: `✅ Successfully sent ${count} spam SMS to ${phone} every ${interval} seconds.`,
@@ -48,14 +50,14 @@ module.exports = {
       } else {
         sendMessage(api, {
           threadID,
-          message: `❌ API error: ${response.data.message || "Unknown error"}`,
+          message: `❌ API error: ${response.data?.message || "Unknown error"}`,
         });
       }
     } catch (error) {
       console.error("Error in spamsms command:", error.message);
       sendMessage(api, {
         threadID,
-        message: `❌ Failed to send spam SMS. Error: ${error.message}`,
+        message: `❌ Failed to send spam SMS. Error: ${error.message || "Unknown error"}`,
       });
     }
   },
