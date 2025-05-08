@@ -14,23 +14,29 @@ module.exports = {
       });
     }
 
-    // Extract parameters correctly
+    // Extract parameters
     const phone = args[1];
-    const count = parseInt(args[2]);
-    const interval = parseInt(args[3]);
+    const count = parseInt(args[2], 10);
+    const interval = parseInt(args[3], 10);
 
     // Validate inputs
     if (!/^\d+$/.test(phone)) {
-      return sendMessage(api, { threadID, message: "❌ Invalid phone number. Digits only." });
+      return sendMessage(api, {
+        threadID,
+        message: "❌ Invalid phone number. Digits only.",
+      });
     }
 
     if (isNaN(count) || isNaN(interval) || count <= 0 || interval <= 0) {
-      return sendMessage(api, { threadID, message: "❌ Count and interval must be positive numbers." });
+      return sendMessage(api, {
+        threadID,
+        message: "❌ Count and interval must be positive numbers.",
+      });
     }
 
     try {
-      // Replace with a working spam SMS API
-      const apiUrl = `https://your-new-api.com/spamsms?phone=${phone}&count=${count}&interval=${interval}`;
+      // Correct the API URL format
+      const apiUrl = `https://kaiz-apis.gleeze.com/api/spamsms?phone=${phone}&count=${count}&interval=${interval}`;
 
       const response = await axios.get(apiUrl);
 
@@ -46,4 +52,11 @@ module.exports = {
         });
       }
     } catch (error) {
-      console.error("Error in
+      console.error("Error in spamsms command:", error.message);
+      sendMessage(api, {
+        threadID,
+        message: `❌ Failed to send spam SMS. Error: ${error.message}`,
+      });
+    }
+  },
+};
