@@ -9,7 +9,6 @@ module.exports = {
     async run({ api, event, args }) {
         const { threadID, senderID } = event;
 
-        // Join args into a single string and use regex to extract quoted or plain arguments
         const input = args.join(" ");
         const matches = [...input.matchAll(/"([^"]+)"|(\S+)/g)];
         const parsedArgs = matches.map(m => m[1] || m[2]);
@@ -31,10 +30,14 @@ module.exports = {
         }
 
         const imagePath = path.join(__dirname, "cache", `fbcover_${senderID}.png`);
-        const imageUrl = `https://api.zetsu.xyz/canvas/fbcover?name=${encodeURIComponent(name)}&subname=${encodeURIComponent(subname)}&sdt=${encodeURIComponent(phone)}&address=${encodeURIComponent(address)}&email=${encodeURIComponent(email)}&uid=${senderID}&color=${encodeURIComponent(color)}`;
+
+        const imageUrl = `https://api.zetsu.xyz/canvas/fbcoverv5?name=${encodeURIComponent(name)}&subname=${encodeURIComponent(subname)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(address)}&email=${encodeURIComponent(email)}&color=${encodeURIComponent(color)}&id=4`;
 
         try {
             api.sendMessage("⏳ Generating your Facebook cover, please wait...", threadID);
+
+            // Ensure the cache directory exists
+            fs.mkdirSync(path.dirname(imagePath), { recursive: true });
 
             const response = await axios({
                 url: imageUrl,
